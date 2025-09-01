@@ -1,0 +1,141 @@
+<div class="auction-detail-container">
+    <div class="dashboard-button-container">
+      <button (click)="goToDashboard()" class="dashboard-button">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+          <polyline points="9 22 9 12 15 12 15 22"/>
+        </svg>
+        <span>Dashboard</span>
+      </button>
+    </div>
+  
+    <div class="auction-navigation">
+      <button (click)="viewPreviousAuction()" class="nav-button prev-button">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M15 18l-6-6 6-6"/>
+        </svg>
+      </button>
+      <button (click)="viewNextAuction()" class="nav-button next-button">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 18l6-6-6-6"/>
+        </svg>
+      </button>
+    </div>
+  
+    <div class="auction-content">
+      <div class="auction-header">
+        <h1>{{ auction.title }}</h1>
+        <img [src]="auction.imageUrl ? (auction.imageUrl.startsWith('http') ? auction.imageUrl : 'http://localhost:3000' + auction.imageUrl) : 'assets/placeholder.jpg'" alt="{{ auction.title }} image" class="auction-image">
+      </div>
+  
+      <div class="auction-info">
+        <p>{{ auction.description || auction.info }}</p>
+        <div class="bid-details">
+          <div class="current-bid">
+            <span class="label">Starting Bid:</span>
+            <span class="value">${{ auction.startingBid || 0 }}</span>
+          </div>
+          <div class="current-bid">
+            <span class="label">Current Bid:</span>
+            <span class="value">${{ auction.currentBid || auction.startingBid || 0 }}</span>
+          </div>
+          <div class="time-left">
+            <span class="label">Time Left:</span>
+            <span class="value timer">{{ timer }}</span>
+          </div>
+        </div>
+      </div>
+  
+      <div class="auction-actions">
+        <!-- Status Check -->
+        <div class="auction-status" *ngIf="auction.status">
+          <div class="status-badge" [ngClass]="'status-' + auction.status">
+            {{ auction.status | titlecase }}
+          </div>
+          <p *ngIf="auction.status === 'pending'" class="status-message">
+            ⏳ This auction is pending admin approval
+          </p>
+          <p *ngIf="auction.status === 'approved'" class="status-message">
+            ✅ This auction is approved and accepting bids! It will officially start at {{ auction.startTime | date:'medium' }}
+          </p>
+          <p *ngIf="auction.status === 'ongoing'" class="status-message">
+            🚀 This auction is live and accepting bids!
+          </p>
+          <p *ngIf="auction.status === 'ended'" class="status-message">
+            🏁 This auction has ended
+          </p>
+        </div>
+
+        <!-- Bid Input - Show for both ongoing and approved auctions -->
+        <div class="bid-input-container" *ngIf="auction.status === 'ongoing' || auction.status === 'approved'">
+          <div class="bid-info">
+            <p><strong>Current Bid:</strong> ${{ currentBidAmount }}</p>
+            <p><strong>Minimum Bid:</strong> ${{ auction.minimumBid || (currentBidAmount + 1) }}</p>
+          </div>
+          <div class="bid-input-wrapper">
+            <input 
+              type="number" 
+              [(ngModel)]="userBidAmount" 
+              [placeholder]="'Enter bid (min: $' + (auction.minimumBid || (currentBidAmount + 1)) + ')'"
+              class="bid-input" 
+              [min]="auction.minimumBid || (currentBidAmount + 1)"
+              [disabled]="isLoading"
+            />
+            <button 
+              (click)="placeBid()" 
+              class="place-bid-button"
+              [disabled]="isLoading || !userBidAmount || userBidAmount <= currentBidAmount"
+            >
+              <span *ngIf="!isLoading">Place Bid</span>
+              <span *ngIf="isLoading" class="loading-spinner">⏳</span>
+            </button>
+          </div>
+          <div class="bid-validation" *ngIf="userBidAmount">
+            <p *ngIf="userBidAmount <= currentBidAmount" class="error-text">
+              Bid must be higher than current bid (${{ currentBidAmount }})
+            </p>
+            <p *ngIf="userBidAmount < (auction.minimumBid || (currentBidAmount + 1))" class="error-text">
+              Bid must be at least ${{ auction.minimumBid || (currentBidAmount + 1) }}
+            </p>
+            <p *ngIf="userBidAmount > currentBidAmount && userBidAmount >= (auction.minimumBid || (currentBidAmount + 1))" class="success-text">
+              ✓ Valid bid amount
+            </p>
+          </div>
+        </div>
+
+        <!-- Message for auctions that can't accept bids -->
+        <div class="auction-message" *ngIf="auction.status !== 'ongoing' && auction.status !== 'approved'">
+          <p *ngIf="auction.status === 'pending'">
+            This auction is waiting for admin approval. Once approved, it will become available for bidding.
+          </p>
+          <p *ngIf="auction.status === 'approved'">
+            This auction has been approved and will start at {{ auction.startTime | date:'medium' }}.
+          </p>
+          <p *ngIf="auction.status === 'ended'">
+            This auction has ended. {{ auction.winner ? 'Winner: ' + getWinnerName(auction.winner) : 'No bids were placed.' }}
+          </p>
+        </div>
+      </div>
+  
+      <div class="auction-bid-history">
+        <h3>Bid History ({{ bidHistory.length }} bids)</h3>
+        <div class="bid-history-content">
+          <div *ngIf="bidHistory.length === 0" class="no-bids">
+            <p>No bids yet. Be the first to bid!</p>
+          </div>
+          <ul *ngIf="bidHistory.length > 0">
+            <li *ngFor="let bid of bidHistory" class="bid-item">
+              <div class="bid-header">
+                <span class="bidder-name">{{ getBidderName(bid.bidder) }}</span>
+                <span class="bid-amount">${{ bid.amount }}</span>
+              </div>
+              <div class="bid-footer">
+                <span class="bid-timestamp">{{ bid.timestamp | date: 'medium' }}</span>
+                <span class="bid-status" *ngIf="bid.amount === currentBidAmount">🏆 Current Highest</span>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>

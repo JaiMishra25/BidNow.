@@ -1,0 +1,100 @@
+<div class="user-detail-container">
+  <!-- Main Heading and Go Back Button in the same line -->
+  <div class="header-container">
+    <h1>User Details</h1>
+    <div class="back-to-dashboard">
+      <button class="btn back-btn" (click)="goToAdminDashboard()">Go Back to Admin Dashboard</button>
+    </div>
+  </div>
+  
+  <div class="user-info" *ngIf="!isLoading && userDetails">
+    <h2>User Information</h2>
+    <p><strong>Name:</strong> {{ userDetails.name }}</p>
+    <p><strong>Email:</strong> {{ userDetails.email }}</p>
+    <p><strong>Role:</strong> {{ userDetails.role | titlecase }}</p>
+    <p><strong>Address:</strong> {{ userDetails.address || 'Not provided' }}</p>
+    <p><strong>Phone:</strong> {{ userDetails.phone || 'Not provided' }}</p>
+    <p><strong>Account Status:</strong> {{ userDetails.isBlocked ? 'Blocked' : 'Active' }}</p>
+    <p><strong>Member Since:</strong> {{ userDetails.createdAt | date:'mediumDate' }}</p>
+  </div>
+
+  <div class="user-stats" *ngIf="!isLoading && userStats">
+    <h2>User Statistics</h2>
+    <div class="stats-grid">
+      <div class="stat-item">
+        <span class="stat-number">{{ userStats.auctionsCreated }}</span>
+        <span class="stat-label">Auctions Created</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-number">{{ userStats.wonAuctions }}</span>
+        <span class="stat-label">Auctions Won</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-number">{{ userStats.totalBids }}</span>
+        <span class="stat-label">Total Bids</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-number">{{ userStats.activeBids }}</span>
+        <span class="stat-label">Active Bids</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-number">{{ userStats.recentBids }}</span>
+        <span class="stat-label">Recent Bids (30d)</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-number">${{ userStats.totalAmountBid | number:'1.2-2' }}</span>
+        <span class="stat-label">Total Bid Amount</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-number">${{ userStats.averageBidAmount | number:'1.2-2' }}</span>
+        <span class="stat-label">Average Bid Amount</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="loading" *ngIf="isLoading">
+    <p>Loading user details...</p>
+  </div>
+
+  <div class="actions">
+    <button class="btn contact-btn" (click)="sendMessage()">Contact User</button>
+    <button class="btn block-btn" (click)="blockUser()" *ngIf="!userDetails.isBlocked">Block User</button>
+    <button class="btn unblock-btn" (click)="unblockUser()" *ngIf="userDetails.isBlocked">Unblock User</button>
+  </div>
+
+  <div class="auction-history">
+    <h2>Auctions Participated</h2>
+    <div class="filters">
+      <input
+        type="text"
+        [(ngModel)]="auctionSearchQuery"
+        placeholder="Search Auctions"
+        (input)="filterAuctions()"
+      />
+      <select [(ngModel)]="auctionStatusFilter" (change)="filterAuctions()">
+        <option value="all">All</option>
+        <option value="completed">Completed</option>
+        <option value="ongoing">Ongoing</option>
+        <option value="upcoming">Upcoming</option>
+      </select>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th (click)="sortAuctions('title')">Title</th>
+          <th (click)="sortAuctions('status')">Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let auction of filteredAuctions">
+          <td>{{ auction.title }}</td>
+          <td>{{ auction.status }}</td>
+          <td>
+            <button class="btn view-details-btn" (click)="viewAuctionDetails(auction._id)">View Details</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

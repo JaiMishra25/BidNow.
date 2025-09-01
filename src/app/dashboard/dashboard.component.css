@@ -1,0 +1,747 @@
+/* Global Styles */
+:host {
+  --primary-color: #f2eef9;
+  --secondary-color: #dec9fa;
+  --accent-color: #9D00FF;
+  --text-primary: #1A0B2E;
+  --text-secondary: #4A3B5E;
+  --success-color: #36db41;
+  --gradient-primary: linear-gradient(135deg, var(--accent-color), #7b00cc);
+  display: block;
+  background-color: var(--secondary-color);
+  color: var(--text-primary);
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+}
+
+/* General Styling */
+body {
+  font-family: 'Inter', sans-serif;
+  margin: 0;
+  padding: 0;
+  background: var(--primary-color);
+  color: var(--text-primary);
+  overflow-x: hidden;
+}
+
+/* Enhanced Navbar Styling */
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 2rem;
+  background: var(--gradient-primary);
+  color: white;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  backdrop-filter: blur(10px);
+}
+
+.navbar .logo {
+  font-size: 2rem;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease;
+  cursor: pointer;
+  user-select: none;
+}
+
+.navbar .logo:hover {
+  transform: scale(1.05);
+  text-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+}
+
+.navbar .logo:active {
+  transform: scale(0.98);
+}
+
+/* Enhanced Search Bar */
+.search-container {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  margin: 0 1rem;
+}
+
+.search-bar {
+  width: 85%;
+  padding: 0.8rem;
+  border-radius: 25px;
+  border: 3px solid var(--secondary-color);
+  font-size: 1rem;
+  font-weight: 500;
+  background: var(--secondary-color);
+  color: var(--text-primary);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease-in-out;
+}
+
+.search-bar:focus {
+  outline: none;
+  border-color: var(--accent-color);
+  background: white;
+  box-shadow: 0 0 15px var(--accent-color);
+  transform: scale(1.02);
+}
+
+/* Enhanced Logout Button */
+.logout {
+  background: linear-gradient(135deg, #ff3e3e, var(--accent-color));
+  color: white;
+  padding: 0.7rem 1.2rem;
+  font-size: 0.9rem;
+  font-weight: 700;
+  margin: 20px;
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+  transition: all 0.4s ease-in-out;
+  box-shadow: 0 6px 12px rgba(255, 62, 62, 0.2);
+  position: relative;
+  overflow: hidden;
+}
+
+.logout:before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    120deg,
+    transparent,
+    rgba(255, 255, 255, 0.3),
+    transparent
+  );
+  transition: 0.6s;
+}
+
+.logout:hover:before {
+  left: 100%;
+}
+
+.logout:hover {
+  background: linear-gradient(135deg, #ff2424, #7b00cc);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 15px rgba(255, 62, 62, 0.3);
+}
+
+/* Enhanced Header */
+.header {
+  text-align: center;
+  padding: 3rem 2rem;
+  background: linear-gradient(to right, var(--accent-color), var(--secondary-color));
+  color: white;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  border-radius: 12px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Add subtle moving gradient to header */
+.header:before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 60%);
+  animation: rotate 20s linear infinite;
+}
+
+@keyframes rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.header h1 {
+  font-size: 3rem;
+  font-weight: 800;
+  letter-spacing: 1.2px;
+  margin-bottom: 1rem;
+  line-height: 1.2;
+  text-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+  animation: fadeInHeader 1.5s ease-in-out forwards;
+  position: relative;
+}
+
+.header h1 .brand-highlight {
+  background: -webkit-linear-gradient(var(--success-color), var(--accent-color));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-style: italic;
+  font-weight: bold;
+}
+
+.header p {
+  font-size: 1.4rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  text-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+  animation: fadeInHeader 2s ease-in-out forwards;
+  position: relative;
+}
+
+/* Keeping Original Auction Section With Enhanced Animations */
+.auction-section {
+  margin: 2rem auto;
+  padding: 2rem;
+  background: var(--secondary-color);
+  border-radius: 15px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  animation: fadeInScale 1s ease-in-out forwards;
+}
+
+.auction-section h2 {
+  margin-bottom: 1.5rem;
+  font-size: 2.5rem;
+  font-weight: 700;
+  text-align: center;
+  color: var(--text-primary);
+  text-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
+}
+
+.auction-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.2rem;
+  justify-content: center;
+}
+
+.auction-item {
+  width: 250px;
+  background: linear-gradient(to bottom, #ffffff, var(--secondary-color));
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  transition: all 0.4s ease-in-out;
+  margin-bottom: 1.5rem;
+  position: relative;
+}
+
+/* Enhanced hover effect for auction items */
+.auction-item:before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(45deg, transparent, rgba(157, 0, 255, 0.1), transparent);
+  opacity: 0;
+  transition: 0.5s ease;
+}
+
+.auction-item:hover:before {
+  opacity: 1;
+}
+
+.auction-item:hover {
+  transform: translateY(-8px) scale(1.03);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
+}
+
+.auction-item img {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+
+.auction-item:hover img {
+  transform: scale(1.05);
+}
+
+.details {
+  padding: 1rem;
+  text-align: center;
+}
+
+.details h3 {
+  margin: 0.8rem 0;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--accent-color);
+  transition: color 0.3s ease-in-out;
+}
+
+.details h3:hover {
+  color: var(--success-color);
+}
+
+.details p {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+.action-btn {
+  background: var(--accent-color);
+  color: white;
+  border: none;
+  border-radius: 25px;
+  padding: 0.7rem 1.2rem;
+  font-size: 0.9rem;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 1rem;
+  transition: all 0.4s ease-in-out;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Add shine effect to action buttons */
+.action-btn:before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: 0.6s;
+}
+
+.action-btn:hover:before {
+  left: 100%;
+}
+
+.action-btn:hover {
+  background: #7b00cc;
+  transform: translateY(-3px);
+}
+
+/* Enhanced Footer */
+.footer {
+  background: var(--gradient-primary);
+  color: white;
+  padding: 4rem 2rem;
+  margin-top: 4rem;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+.footer-content {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  max-width: 1000px;
+  margin: 0 auto;
+  gap: 3rem;
+}
+
+.footer-section {
+  padding: 1.5rem;
+  width: 100%;
+  max-width: 300px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 15px;
+  backdrop-filter: blur(10px);
+  transition: transform 0.3s ease;
+}
+
+.footer-section:hover {
+  transform: translateY(-5px);
+}
+
+.footer-section h3 {
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+  position: relative;
+  display: inline-block;
+}
+
+.footer-section h3:after {
+  content: '';
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 50px;
+  height: 3px;
+  background: var(--success-color);
+  border-radius: 2px;
+  transition: width 0.3s ease;
+}
+
+.footer-section:hover h3:after {
+  width: 80px;
+}
+
+.footer-section ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.footer-section li {
+  margin-bottom: 0.5rem;
+  width: 100%;
+  text-align: center;
+}
+
+.footer-section a {
+  color: rgba(255, 255, 255, 0.8);
+  text-decoration: none;
+  transition: all 0.3s ease;
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  width: 80%;
+}
+
+.footer-section a:hover {
+  color: white;
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateY(-2px);
+}
+
+/* Footer bottom section */
+.footer-bottom {
+  margin-top: 3rem;
+  padding-top: 2rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  text-align: center;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* Social media icons if needed */
+.social-links {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+.social-links a {
+  color: white;
+  font-size: 1.5rem;
+  transition: all 0.3s ease;
+}
+
+.social-links a:hover {
+  transform: translateY(-3px);
+  color: var(--success-color);
+}
+/* Enhanced Animations */
+@keyframes fadeInHeader {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Keeping Original Responsive Styles */
+@media (max-width: 480px) {
+  .navbar {
+    flex-direction: column;
+    padding: 1rem 1.5rem;
+  }
+
+  .navbar .logo {
+    font-size: 1.6rem;
+    margin-bottom: 1rem;
+  }
+
+  .search-container {
+    width: 100%;
+    margin: 1rem 0;
+  }
+
+  .search-bar {
+    width: 100%;
+    padding: 0.8rem;
+    font-size: 1rem;
+  }
+
+  .logout {
+    padding: 0.6rem 1.1rem;
+    font-size: 0.8rem;
+  }
+
+  .header h1 {
+    font-size: 2.2rem;
+  }
+
+  .header p {
+    font-size: 1.2rem;
+  }
+
+  .auction-section h2 {
+    font-size: 2rem;
+  }
+
+  .auction-item {
+    width: 100%;
+    margin-bottom: 1rem;
+  }
+
+  .action-btn {
+    font-size: 0.9rem;
+    padding: 0.7rem 1rem;
+  }
+
+  .footer {
+    padding: 2rem 1rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .navbar {
+    flex-direction: column;
+    padding: 1rem 2rem;
+  }
+
+  .header h1 {
+    font-size: 2.5rem;
+  }
+
+  .header p {
+    font-size: 1.4rem;
+  }
+
+  .auction-item {
+    width: 48%;
+    margin-bottom: 1.5rem;
+  }
+
+  .auction-list {
+    flex-direction: column;
+  }
+
+  .action-btn {
+    font-size: 1rem;
+    padding: 1rem 1.5rem;
+  }
+
+  .footer-content {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Navigation Bar Styles */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: var(--accent-color);
+  padding: 10px 20px;
+  color: white;
+  font-weight: 600;
+}
+
+.add-auction-btn {
+  background: linear-gradient(135deg, #ff3e3e, var(--accent-color));
+  color: white;
+  padding: 0.7rem 1.2rem;
+  font-size: 0.9rem;
+  font-weight: 700;
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+  transition: all 0.4s ease-in-out;
+  box-shadow: 0 6px 12px rgba(255, 62, 62, 0.2);
+  position: relative;
+  overflow: hidden;
+}
+
+.add-auction-btn:before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  transition: 0.6s;
+}
+
+.add-auction-btn:hover:before {
+  left: 100%;
+}
+
+.add-auction-btn:hover {
+  background: linear-gradient(135deg, #ff2424, #7b00cc);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 15px rgba(255, 62, 62, 0.3);
+}
+
+/* Add Auction Modal Styles */
+.add-auction-modal {
+  background: var(--secondary-color);
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  max-width: 500px;
+  margin: auto;
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.add-auction-modal h2 {
+  margin-bottom: 15px;
+  color: var(--text-primary);
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 14px;
+  margin-bottom: 5px;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+  width: 100%;
+  padding: 8px;
+  font-size: 14px;
+  font-weight: 400;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-family: inherit;
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+  border-color: var(--accent-color);
+  outline: none;
+}
+
+/* Image preview styles */
+.preview-image {
+  max-width: 100px;
+  max-height: 100px;
+  margin-top: 10px;
+}
+
+/* Form Actions Styles */
+.form-actions {
+  display: flex;
+  justify-content: space-between;
+}
+
+.submit-btn {
+  background-color: var(--success-color);
+  color: white;
+  padding: 10px 15px;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.submit-btn:hover {
+  background-color: #27ae60;
+}
+
+.cancel-btn {
+  background-color: #e74c3c;
+  color: white;
+  padding: 10px 15px;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.cancel-btn:hover {
+  background-color: #c0392b;
+}
+
+.footer-btn {
+  background-color:  #951AE4;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  font-size: 16px;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: background-color 0.3s;
+}
+.abt{
+  background-color: #9F1AF3;
+}
+.sprt{
+  background-color: #9A1AEB;
+}
+
+/* Finished Auctions Styling */
+.finished-auction {
+  opacity: 0.8;
+  border: 2px solid #e0e0e0;
+  background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+}
+
+.finished-auction:hover {
+  opacity: 0.9;
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+.finished-auction .details h3 {
+  color: #6c757d;
+}
+
+.finished-auction .details p {
+  color: #6c757d;
+}
+
+.status-ended {
+  background: #dc3545;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.finished-auction .action-btn {
+  background: #6c757d;
+  color: white;
+  border: 2px solid #6c757d;
+}
+
+.finished-auction .action-btn:hover {
+  background: #5a6268;
+  border-color: #5a6268;
+}
+

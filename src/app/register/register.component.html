@@ -1,0 +1,175 @@
+<div class="bubble"></div>
+<div class="bubble"></div>
+<div class="bubble"></div>
+<div class="bubble"></div>
+<div class="bubble"></div>
+<div class="bubble"></div>
+<div class="bubble"></div>
+<div class="bubble"></div>
+<div class="register-container">
+    <a href="/home" class="back-home">
+        <i class="back-icon">←</i> Back to Home
+    </a>
+    
+    <h2>Create Account</h2>
+    <p class="subtitle">Join us and start your journey</p>
+  
+    <form (ngSubmit)="onRegister(registerForm)" #registerForm="ngForm" novalidate>
+      <div class="form-group">
+        <label for="name">Full Name</label>
+        <div class="input-container">
+          <i class="fas fa-user"></i>
+          <input
+            type="text"
+            id="name"
+            name="name"
+            [(ngModel)]="name"
+            required
+            minlength="2"
+            #nameField="ngModel"
+            placeholder="Enter your full name"
+          />
+        </div>
+        <div *ngIf="nameField.invalid && nameField.touched" class="error">
+          Name must be at least 2 characters long.
+        </div>
+      </div>
+  
+      <div class="form-group">
+        <label for="email">Email Address</label>
+        <div class="input-container">
+          <i class="fas fa-envelope"></i>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            [(ngModel)]="email"
+            required
+            email
+            #emailField="ngModel"
+            placeholder="Enter your email"
+          />
+        </div>
+        <div *ngIf="emailField.invalid && emailField.touched" class="error">
+          Please enter a valid email address.
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="role">Account Type</label>
+        <div class="input-container">
+          <i class="fas fa-users"></i>
+          <select
+            id="role"
+            name="role"
+            [(ngModel)]="role"
+            required
+            #roleField="ngModel"
+          >
+            <option value="buyer">Buyer - I want to bid on auctions</option>
+            <option value="seller">Seller - I want to sell items</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="phone">Phone Number (Optional)</label>
+        <div class="input-container">
+          <i class="fas fa-phone"></i>
+          <input
+            type="tel"
+            id="phone"
+            name="phone"
+            [(ngModel)]="phone"
+            placeholder="Enter your phone number"
+          />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="address">Address (Optional)</label>
+        <div class="input-container">
+          <i class="fas fa-map-marker-alt"></i>
+          <input
+            type="address"
+            id="address"
+            name="address"
+            [(ngModel)]="address"
+            placeholder="Enter your address"
+          />
+        </div>
+      </div>
+  
+      <div class="form-group">
+        <label for="password">Password</label>
+        <div class="input-container">
+          <i class="fas fa-lock"></i>
+          <input
+            type="password"
+            id="password"
+            name="password"
+            [(ngModel)]="password"
+            (input)="onPasswordInput($event)"
+            required
+            #passwordField="ngModel"
+            placeholder="Create a strong password"
+          />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="confirmPassword">Confirm Password</label>
+        <div class="input-container">
+          <i class="fas fa-lock"></i>
+          <input
+            type="password"
+            id="confirmPassword"
+            name="confirmPassword"
+            [(ngModel)]="confirmPassword"
+            required
+            #confirmPasswordField="ngModel"
+            placeholder="Confirm your password"
+          />
+        </div>
+        <div *ngIf="confirmPassword && password !== confirmPassword" class="error">
+          Passwords do not match.
+        </div>
+      </div>
+
+      <div class="criteria">
+        <p [class.valid]="passwordCriteria.length">
+          <i [class]="passwordCriteria.length ? 'fas fa-check-circle' : 'fas fa-circle'"></i>
+          At least 8 characters
+        </p>
+        <p [class.valid]="passwordCriteria.uppercase">
+          <i [class]="passwordCriteria.uppercase ? 'fas fa-check-circle' : 'fas fa-circle'"></i>
+          One uppercase letter</p>
+        <p [class.valid]="passwordCriteria.lowercase">
+          <i [class]="passwordCriteria.lowercase ? 'fas fa-check-circle' : 'fas fa-circle'"></i>
+          One lowercase letter</p>
+        <p [class.valid]="passwordCriteria.special">
+          <i [class]="passwordCriteria.special ? 'fas fa-check-circle' : 'fas fa-circle'"></i>
+          One special character</p>
+        <p [class.valid]="passwordCriteria.number">
+          <i [class]="passwordCriteria.number ? 'fas fa-check-circle' : 'fas fa-circle'"></i>
+          One number</p>
+      </div>
+
+      <div *ngIf="errorMessage" class="error">
+        {{ errorMessage }}
+      </div>
+
+      <div *ngIf="successMessage" class="success">
+        {{ successMessage }}
+      </div>
+  
+      <button type="submit" [disabled]="!registerForm.valid || isLoading">
+        <span *ngIf="!isLoading">Create Account</span>
+        <span *ngIf="isLoading" class="loader"></span>
+      </button>
+    </form>
+  
+    <div class="login-prompt">
+      Already have an account? <a href="/login" class="login-link">Log In</a>
+    </div>
+  </div>

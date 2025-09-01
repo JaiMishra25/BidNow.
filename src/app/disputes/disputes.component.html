@@ -1,0 +1,38 @@
+<div class="disputes-container">
+    <button class="back-btn" (click)="navigateToAdminDashboard()">Back to Admin Dashboard</button>
+    <h2>Dispute Dashboard</h2>
+    <p><strong>Total Disputes:</strong> {{ stats.totalDisputes }}</p>
+    <p><strong>Resolved Disputes:</strong> {{ stats.resolvedDisputes }}</p>
+
+    <div class="filters">
+        <label for="disputeStatus">Filter by Status:</label>
+        <select [(ngModel)]="selectedDisputeStatus" (change)="applyDisputeFilters()" id="disputeStatus">
+            <option value="all">All</option>
+            <option value="open">Open</option>
+            <option value="resolved">Resolved</option>
+        </select>
+
+        <input
+            type="text"
+            [(ngModel)]="disputeSearchQuery"
+            placeholder="Search by Auction Title"
+            (input)="searchDisputes()"
+        />
+    </div>
+
+    <div *ngFor="let dispute of filteredDisputes" class="dispute-item">
+        <h3>Auction: {{ dispute.auctionTitle }}</h3>
+        <p><strong>Reason:</strong> {{ dispute.reason }}</p>
+        <p><strong>Status:</strong> {{ dispute.status }}</p>
+
+        <button class="resolve-btn" (click)="resolveDispute(dispute)" *ngIf="dispute.status === 'open'">
+            Resolve
+        </button>
+        <button class="undo-btn" (click)="undoResolveDispute(dispute)" *ngIf="dispute.status === 'resolved'">
+            Undo Resolve
+        </button>
+        <button class="escalate-btn" (click)="escalateDispute(dispute)">
+            Escalate
+        </button>
+    </div>
+</div>

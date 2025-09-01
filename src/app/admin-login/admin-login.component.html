@@ -1,0 +1,69 @@
+<div class="bubble"></div>
+<div class="bubble"></div>
+<div class="bubble"></div>
+<div class="bubble"></div>
+<div class="bubble"></div>
+<div class="bubble"></div>
+<div class="bubble"></div>
+<div class="bubble"></div>
+<div class="login-container">
+    <a href="/home" class="back-home">
+        <i class="back-icon">←</i> Back to Home
+    </a>
+
+    <div class="content-wrapper">
+        <h2>Admin Login</h2>
+        <p class="subtitle">Enter your credentials to manage the platform</p>
+
+        <form #adminLoginForm="ngForm" (ngSubmit)="onAdminLogin(adminLoginForm)">
+            <div class="form-group">
+                <div class="input-container">
+                    <input 
+                        type="email" 
+                        name="email" 
+                        [(ngModel)]="email" 
+                        required 
+                        email 
+                        placeholder="Admin Email Address"
+                        #emailInput="ngModel"
+                        [ngClass]="{'input-error': emailInput.invalid && (emailInput.dirty || emailInput.touched)}"
+                    >
+                    <i class="fas fa-envelope"></i>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="input-container">
+                    <input 
+                        [type]="showPassword ? 'text' : 'password'" 
+                        name="password" 
+                        [(ngModel)]="password" 
+                        required 
+                        minlength="8" 
+                        placeholder="Password"
+                        #passwordInput="ngModel"
+                        [ngClass]="{'input-error': passwordInput.invalid && (passwordInput.dirty || passwordInput.touched)}"
+                    >
+                    <i class="fas fa-lock"></i>
+                    <span 
+                        class="toggle-password" 
+                        (click)="togglePasswordVisibility()"
+                    >
+                        <i class="fas" [ngClass]="showPassword ? 'fa-eye-slash' : 'fa-eye'"></i>
+                    </span>
+                </div>
+            </div>
+
+            <button type="submit" [disabled]="isLoading">
+                <span *ngIf="!isLoading">Login</span>
+                <span *ngIf="isLoading" class="loader"></span>
+            </button>
+
+            <div *ngIf="errorMessage" class="message-animation">
+                <p style="color: red; text-align: center; margin-top: 1rem;">
+                    {{ errorMessage }}
+                </p>
+            </div>
+        </form>
+    </div>
+</div>

@@ -1,0 +1,214 @@
+<!-- Navbar -->
+<nav [class.fixed-nav]="isNavbarFixed">
+  <div class="nav-content">
+    <div class="nav-left">
+      <a href="/" class="logo">
+        BidNow
+        <span class="logo-dot">.</span>
+      </a>
+    </div>
+    
+    <div class="nav-middle">
+      @for (link of navLinks; track link.path) {
+        <a 
+          href="javascript:void(0)" 
+          (click)="scrollToSection(link.sectionId)" 
+          class="nav-link"
+        >
+          {{link.label}}
+        </a>
+      }
+    </div>
+
+    <div class="nav-right">
+      <a href="/login" class="nav-btn login-btn">Login</a>
+      <a href="/register" class="nav-btn register-btn">Register</a>
+    </div>
+  </div>
+</nav>
+
+<div class="home-container">
+  <!-- Hero Section with animated background -->
+  <div class="hero-section">
+    <div class="hero-background">
+      <div class="bubble"></div>
+      <div class="bubble"></div>
+      <div class="bubble"></div>
+      <div class="bubble"></div>
+      <div class="bubble"></div>
+  </div>
+    <div class="hero-background"></div>
+    <div class="hero-content">
+      <h1>Discover Unique Treasures</h1>
+      <p class="hero-text">Join thousands of collectors and enthusiasts in the world's most exciting online auctions.</p>
+      
+      <!-- Enhanced Search Bar -->
+      <div class="search-container">
+        <div class="search-wrapper">
+          <input 
+            type="text" 
+            [(ngModel)]="searchQuery" 
+            placeholder="What are you looking for?"
+            class="search-input"
+          >
+          <button (click)="onSearch()" class="search-btn">
+            Search Auctions
+          </button>
+        </div>
+        <div class="search-tags">
+          <span>Popular:</span>
+          <a href="#">Vintage Watches</a>
+          <a href="#">Art</a>
+          <a href="#">Electronics</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stats Section -->
+  <div class="stats-section">
+    <div class="stat-item">
+      <div class="stat-number">10K+</div>
+      <div class="stat-label">Active Auctions</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-number">50K+</div>
+      <div class="stat-label">Happy Customers</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-number">$1M+</div>
+      <div class="stat-label">Items Sold</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-number">99%</div>
+      <div class="stat-label">Satisfaction Rate</div>
+    </div>
+  </div>
+
+  <!-- Categories Section -->
+  <div id="categories-section" class="categories-section">
+    <h2>Explore Categories</h2>
+    <p class="section-subtitle">Find exactly what you're looking for</p>
+    <div class="categories-grid">
+      @for (category of categories; track category.name) {
+        <div class="category-card">
+          <span class="category-icon">{{category.icon}}</span>
+          <span class="category-name">{{category.name}}</span>
+          <span class="category-count">{{category.count}} items</span>
+        </div>
+      }
+    </div>
+  </div>
+
+  <!-- Featured Auctions -->
+  <div id="featured-section" class="featured-section">
+    <h2>Featured Auctions</h2>
+    <p class="section-subtitle">Don't miss these amazing opportunities</p>
+    <div class="auctions-grid">
+      @for (auction of featuredAuctions; track auction.id) {
+        <div class="auction-card">
+          <div class="auction-image-wrapper">
+            <img [src]="auction.imageUrl" [alt]="auction.title" class="auction-image">
+            <div class="auction-badge">Featured</div>
+          </div>
+          <div class="auction-details">
+            <h3>{{auction.title}}</h3>
+            <div class="auction-stats">
+              <p class="current-bid">Current Bid: ${{auction.currentBid.toLocaleString()}}</p>
+              <p class="total-bids">{{auction.bids}} bids</p>
+            </div>
+            <div class="auction-footer">
+              <p class="time-left">⏰ {{auction.timeLeft}}</p>
+              <button class="bid-btn">Bid Now</button>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+
+  <!-- How It Works Section -->
+  <div id="how-it-works" class="how-it-works">
+    <h2>How It Works</h2>
+    <p class="section-subtitle">Start bidding in just a few simple steps</p>
+    <div class="steps-grid">
+      <div class="step">
+        <div class="step-number">1</div>
+        <h3>Register</h3>
+        <p>Create your free account in minutes</p>
+      </div>
+      <div class="step">
+        <div class="step-number">2</div>
+        <h3>Browse</h3>
+        <p>Explore unique items across categories</p>
+      </div>
+      <div class="step">
+        <div class="step-number">3</div>
+        <h3>Bid</h3>
+        <p>Place competitive bids on desired items</p>
+      </div>
+      <div class="step">
+        <div class="step-number">4</div>
+        <h3>Win</h3>
+        <p>Win auctions and get your treasures</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Newsletter Section -->
+  <div id="newsletter-section" class="newsletter-section">
+    <div class="newsletter-content">
+      <h2>Stay Updated</h2>
+      <p>Subscribe to our newsletter for exclusive auctions and offers</p>
+      <div class="newsletter-form">
+        <input type="email" placeholder="Enter your email" class="newsletter-input">
+        <button class="newsletter-btn">Subscribe</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Footer -->
+<footer class="footer">
+  <div class="footer-content">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <h3>BidNow<span class="logo-dot">.</span></h3>
+        <p>Your trusted platform for online auctions. Discover unique items and bid with confidence.</p>
+        <div class="social-links">
+          <a href="https://www.facebook.com/login.php/" class="social-link">Facebook</a>
+          <a href="https://x.com/" class="social-link">Twitter</a>
+          <a href="https://www.instagram.com/#" class="social-link">Instagram</a>
+          <a href="https://www.linkedin.com/login" class="social-link">LinkedIn</a>
+        </div>
+      </div>
+      
+      <div class="footer-links">
+        <div class="footer-group">
+          <h4>About</h4>
+          @for (link of footerLinks.about; track link.label) {
+            <a [href]="link.path">{{link.label}}</a>
+          }
+        </div>
+        
+        <div class="footer-group">
+          <h4>Support</h4>
+          @for (link of footerLinks.support; track link.label) {
+            <a [href]="link.path">{{link.label}}</a>
+          }
+        </div>
+        
+        <div class="footer-group">
+          <h4>Legal</h4>
+          @for (link of footerLinks.legal; track link.label) {
+            <a [href]="link.path">{{link.label}}</a>
+          }
+        </div>
+      </div>
+    </div>
+    
+    <div class="footer-bottom">
+      <p>&copy; {{currentYear}} BidNow. Made with ❤️ by Jai</p>
+    </div>
+  </div>
+</footer>

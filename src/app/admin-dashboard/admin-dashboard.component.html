@@ -1,0 +1,136 @@
+<!-- Admin Navigation Bar -->
+<div class="navbar">
+    <div class="logo">BidNow Admin</div>
+    <div class="nav-actions">
+        <button class="logout" (click)="logout()">Logout</button>
+    </div>
+</div>
+
+<!-- Admin Dashboard Header -->
+<div class="header">
+    <h1>Admin Dashboard</h1>
+    <p>Manage Auctions, Users, and Reports</p>
+</div>
+
+<!-- Stats Dashboard -->
+<div class="stats-section">
+    <div class="stat-card">
+        <h3>Total Users</h3>
+        <p class="stat-number">{{ stats.totalUsers }}</p>
+    </div>
+    <div class="stat-card">
+        <h3>Total Auctions</h3>
+        <p class="stat-number">{{ stats.totalAuctions }}</p>
+    </div>
+    <div class="stat-card">
+        <h3>Active Auctions</h3>
+        <p class="stat-number">{{ stats.activeAuctions }}</p>
+    </div>
+    <div class="stat-card">
+        <h3>Pending Approval</h3>
+        <p class="stat-number">{{ stats.pendingAuctions }}</p>
+    </div>
+    <div class="stat-card">
+        <h3>Total Bids</h3>
+        <p class="stat-number">{{ stats.totalBids }}</p>
+    </div>
+    <div class="stat-card">
+        <h3>Revenue</h3>
+        <p class="stat-number">${{ stats.totalRevenue | number }}</p>
+    </div>
+</div>
+
+<!-- Auction Listings -->
+<div class="auction-section">
+    <h2>Current Auctions</h2>
+    <div class="auction-filters">
+        <label for="filter">Filter Auctions:</label>
+        <select [(ngModel)]="selectedFilter" (change)="applyFilters()" id="filter">
+            <option value="pending">Pending Approval</option>
+            <option value="approved">Approved</option>
+            <option value="ongoing">Live/Ongoing</option>
+            <option value="ended">Ended</option>
+            <option value="rejected">Rejected</option>
+        </select>
+        <input [(ngModel)]="searchQuery" (input)="searchAuctions()" placeholder="Search Auctions" />
+    </div>
+
+    <div class="auction-list">
+        <div class="auction-item" *ngFor="let auction of filteredCurrentAuctions">
+            <img [src]="auction.imageUrl ? 'http://localhost:3000' + auction.imageUrl : 'assets/placeholder.jpg'" alt="{{ auction.title }}" />
+            <div class="details">
+                <h3>{{ auction.title }}</h3>
+                <p><strong>Status:</strong> {{ auction.status | titlecase }}</p>
+                <p><strong>Seller:</strong> {{ auction.seller?.name || 'Unknown' }}</p>
+                <p><strong>Starting Bid:</strong> ${{ auction.startingBid }}</p>
+                <p><strong>Current Bid:</strong> ${{ auction.currentBid || 'No bids yet' }}</p>
+                <p><strong>Created:</strong> {{ auction.createdAt | date:'short' }}</p>
+                <div class="auction-actions">
+                    <button *ngIf="auction.status === 'pending'" class="action-btn approve" (click)="approveAuction(auction)">Approve</button>
+                    <button *ngIf="auction.status === 'pending'" class="action-btn reject" (click)="rejectAuction(auction)">Reject</button>
+                    <button *ngIf="auction.status === 'ongoing'" class="action-btn end" (click)="endAuction(auction)">End Auction</button>
+                    <button class="action-btn view" (click)="viewAuctionDetail(auction)">View Details</button>
+                    <button *ngIf="auction.status !== 'ongoing' && auction.status !== 'ended'" class="action-btn delete" (click)="deleteAuction(auction)">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- User Management Section -->
+<div class="user-management">
+    <h2>User Management</h2>
+    
+    <!-- User Filters -->
+    <div class="user-filters">
+        <select [(ngModel)]="selectedUserRole" (change)="filterUsers()">
+            <option value="all">All Roles</option>
+            <option value="buyer">Buyers</option>
+            <option value="seller">Sellers</option>
+        </select>
+        <input [(ngModel)]="userSearchQuery" (input)="filterUsers()" placeholder="Search Users" />
+    </div>
+
+    <div class="user-list">
+        <div class="user-item" *ngFor="let user of displayedUsers">
+            <div class="user-info">
+                <p><strong>{{ user.name }}</strong></p>
+                <p>{{ user.email }}</p>
+                <p><strong>Role:</strong> {{ user.role | titlecase }}</p>
+                <p><strong>Status:</strong> {{ user.isBlocked ? 'Blocked' : 'Active' }}</p>
+                <p><strong>Joined:</strong> {{ user.createdAt | date:'short' }}</p>
+            </div>
+            <div class="user-actions">
+                <button class="action-btn" (click)="viewUserDetails(user)">View Details</button>
+                <button class="action-btn" 
+                        [class.unblock]="user.isBlocked" 
+                        (click)="blockUser(user)">
+                    {{ user.isBlocked ? 'Unblock' : 'Block' }}
+                </button>
+                <button *ngIf="user.role !== 'admin'" class="action-btn delete" (click)="deleteUser(user)">Delete</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Load More Button -->
+    <div class="load-more-container" *ngIf="hasMoreUsers">
+        <button class="load-more-btn" (click)="loadMoreUsers()">
+            Load More Users ({{ filteredUsers.length - displayedUsers.length }} remaining)
+        </button>
+    </div>
+</div>
+
+<!-- Dispute Resolution Section -->
+<div class="dashboard-disputes">
+    <h2>Disputes</h2>
+    <p><strong>Open Disputes: {{ stats.openDisputes }}</strong></p>
+    <button class="action-btn" (click)="navigateToDisputes()">Manage Disputes</button>
+</div>  
+
+<!-- Logs and Analytics -->
+<div class="logs-analytics">
+    <h2>Analytics & Reports</h2>
+    <button class="action-btn" (click)="viewDetailedLogs()">View Detailed Analytics</button>
+</div>

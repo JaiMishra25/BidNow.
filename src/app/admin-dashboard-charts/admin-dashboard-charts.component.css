@@ -1,0 +1,233 @@
+:host,
+.charts-container {
+    display: block !important;
+    width: 100% !important;
+    min-height: 100vh !important;
+    background: linear-gradient(135deg, var(--admin-primary-color, #fef3e5), #ffc792) !important;
+    background-size: 400% 400% !important;
+    animation: gradientFlow 15s ease infinite !important;
+    color: var(--admin-text-color, #1a1a1a) !important;
+    font-family: 'Roboto', 'Arial', sans-serif !important;
+    padding: 0 2rem 2rem 2rem !important;
+    box-sizing: border-box !important;
+    position: relative !important;
+    perspective: 1000px !important;
+    overflow-x: hidden !important;
+}
+
+/* Gradient Animation */
+@keyframes gradientFlow {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+
+:host .header-container,
+.charts-container .header-container {
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    width: 100% !important;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
+    padding: 1.5rem 2rem !important;
+    z-index: 10 !important;
+    background: linear-gradient(
+        135deg, 
+        #ffd39a, 
+        #ffc085
+    ) !important;
+    backdrop-filter: blur(10px) !important;
+    box-shadow: 
+        0 4px 6px rgba(0, 0, 0, 0.1),
+        0 1px 3px rgba(0, 0, 0, 0.08) !important;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05) !important;
+}
+
+/* Heading Styles */
+:host h1,
+.charts-container h1 {
+    margin: 0 !important;
+    font-size: 2.5rem !important;
+    font-weight: 300 !important;
+    letter-spacing: 1px !important;
+    color: var(--admin-text-color, #1a1a1a) !important;
+    text-align: left !important;
+    width: auto !important;
+}
+
+/* Button Container (Align buttons side by side) */
+:host .button-container,
+.charts-container .button-container {
+    display: flex !important;
+    gap: 15px !important;
+}
+
+/* Back and Logout Buttons Styles */
+.back-btn,
+.logout-btn {
+    background: var(--admin-accent-color, #ff6700) !important;
+    color: #fff !important;
+    border: none !important;
+    padding: 12px 25px !important;
+    border-radius: 8px !important;
+    font-size: 1rem !important;
+    cursor: pointer !important;
+    transition: 
+        transform 0.3s ease,
+        box-shadow 0.3s ease !important;
+    text-transform: uppercase !important;
+    letter-spacing: 1px !important;
+}
+
+.back-btn:hover,
+.logout-btn:hover {
+    transform: translateY(-3px) scale(1.05) !important;
+    box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* Chart Container Grid Layout (increased top padding) */
+:host .charts-container,
+.charts-container {
+    display: grid !important;
+    grid-template-columns: repeat(2, 1fr) !important;
+    gap: 30px !important;
+    max-width: 1400px !important;
+    margin: 0 auto !important;
+    width: 100% !important;
+    align-items: stretch !important;
+    padding-top: 120px !important; /* Increased to provide more space below navbar */
+}
+
+/* Chart Wrapper Styles */
+/* Chart Wrapper with Enhanced Glossy Effect */
+:host .chart-wrapper,
+.charts-container .chart-wrapper {
+    background: linear-gradient(145deg, 
+        color-mix(in srgb, var(--admin-primary-color, #ffedd5) 90%, white 10%), 
+        color-mix(in srgb, var(--admin-primary-color, #ffedd5) 70%, white 30%)
+    ) !important;
+    border: 2px solid var(--admin-accent-color, #ff6700) !important;
+    border-radius: 15px !important;
+    padding: 20px !important;
+    text-align: center !important;
+    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+    box-shadow: 
+        0 15px 30px rgba(0, 0, 0, 0.12),
+        0 8px 15px rgba(0, 0, 0, 0.06),
+        inset 0 0 20px rgba(255, 255, 255, 0.4) !important; /* Added inner glow for glossy effect */
+    position: relative !important;
+    overflow: hidden !important;
+    transform-style: preserve-3d !important;
+    transform: rotateX(3deg) rotateY(3deg) !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: center !important;
+    min-height: 400px !important;
+    backdrop-filter: blur(5px) !important; /* Slight blur for glossiness */
+}
+
+/* Chart Wrapper Hover Effects */
+:host .chart-wrapper:hover,
+.charts-container .chart-wrapper:hover {
+    transform: 
+        rotateX(0deg) 
+        rotateY(0deg) 
+        translateY(-10px) 
+        scale(1.03) !important;
+    box-shadow: 
+        0 15px 35px rgba(0, 0, 0, 0.15),
+        0 8px 20px rgba(0, 0, 0, 0.1) !important;
+    z-index: 10 !important;
+}
+
+/* Chart Title Styles */
+:host .chart-wrapper h2,
+.charts-container .chart-wrapper h2 {
+    color: var(--admin-text-color, #1a1a1a) !important;
+    margin-bottom: 15px !important;
+    font-size: 1.2rem !important;
+    position: relative !important;
+    display: inline-block !important;
+}
+
+:host .chart-wrapper h2::after,
+.charts-container .chart-wrapper h2::after {
+    content: '' !important;
+    position: absolute !important;
+    bottom: -5px !important;
+    left: 0 !important;
+    width: 100% !important;
+    height: 2px !important;
+    background: linear-gradient(
+        to right, 
+        transparent, 
+        var(--admin-accent-color, #ff6700), 
+        transparent
+    ) !important;
+    transform: scaleX(0) !important;
+    transition: transform 0.3s ease !important;
+}
+
+:host .chart-wrapper:hover h2::after,
+.charts-container .chart-wrapper:hover h2::after {
+    transform: scaleX(1) !important;
+}
+
+/* Canvas Styles */
+:host canvas,
+.charts-container canvas {
+    max-width: 100% !important;
+    height: 280px !important;
+    border-radius: 10px !important;
+    transition: filter 0.3s ease !important;
+    display: block !important;
+    margin: 0 auto !important;
+}
+
+:host .chart-wrapper:hover canvas,
+.charts-container .chart-wrapper:hover canvas {
+    filter: brightness(1.05) contrast(1.1) !important;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 1200px) {
+    :host .charts-container,
+    .charts-container {
+        grid-template-columns: 1fr 1fr !important;
+    }
+}
+
+@media (max-width: 768px) {
+    :host .charts-container,
+    .charts-container {
+        grid-template-columns: 1fr !important;
+        padding: 1rem !important;
+    }
+
+    :host h1,
+    .charts-container h1 {
+        font-size: 2rem !important;
+    }
+
+    :host .chart-wrapper,
+    .charts-container .chart-wrapper {
+        min-height: 350px !important;
+    }
+}
+
+@media (max-width: 480px) {
+    :host h1,
+    .charts-container h1 {
+        font-size: 1.5rem !important;
+    }
+
+    :host .chart-wrapper,
+    .charts-container .chart-wrapper {
+        min-height: 300px !important;
+        padding: 15px !important;
+    }
+}
