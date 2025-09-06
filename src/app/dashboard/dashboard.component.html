@@ -20,42 +20,61 @@
 <div *ngIf="showAddAuctionForm" class="add-auction-form-modal">
   <div class="add-auction-modal">
     <h2>Add New Auction</h2>
-    <form (ngSubmit)="addAuction()">
+    <form #auctionForm="ngForm" (ngSubmit)="addAuction()">
       <div class="form-group">
-        <label for="title">Auction Title</label>
-        <input type="text" id="title" [(ngModel)]="newAuction.title" name="title" required />
+        <label for="title">Auction Title *</label>
+        <input type="text" id="title" [(ngModel)]="newAuction.title" name="title" required minlength="3" #titleInput="ngModel" />
+        <div *ngIf="titleInput.invalid && titleInput.touched" class="error-message">
+          <span *ngIf="titleInput.errors?.['required']">Title is required</span>
+          <span *ngIf="titleInput.errors?.['minlength']">Title must be at least 3 characters</span>
+        </div>
       </div>
       <div class="form-group">
-        <label for="info">Auction Description</label>
-        <textarea id="info" [(ngModel)]="newAuction.info" name="info" required></textarea>
+        <label for="info">Auction Description *</label>
+        <textarea id="info" [(ngModel)]="newAuction.info" name="info" required minlength="10" #infoInput="ngModel"></textarea>
+        <div *ngIf="infoInput.invalid && infoInput.touched" class="error-message">
+          <span *ngIf="infoInput.errors?.['required']">Description is required</span>
+          <span *ngIf="infoInput.errors?.['minlength']">Description must be at least 10 characters</span>
+        </div>
       </div>
       <div class="form-group">
-        <label for="minimumBid">Starting Bid ($)</label>
-        <input type="number" id="minimumBid" [(ngModel)]="newAuction.minimumBid" name="minimumBid" min="0" step="0.01" required />
+        <label for="minimumBid">Starting Bid ($) *</label>
+        <input type="number" id="minimumBid" [(ngModel)]="newAuction.minimumBid" name="minimumBid" min="0.01" step="0.01" required #bidInput="ngModel" />
+        <div *ngIf="bidInput.invalid && bidInput.touched" class="error-message">
+          <span *ngIf="bidInput.errors?.['required']">Starting bid is required</span>
+          <span *ngIf="bidInput.errors?.['min']">Starting bid must be greater than 0</span>
+        </div>
       </div>
       <div class="form-group">
-        <label for="startTime">Auction Start Time</label>
-        <input type="datetime-local" id="startTime" [(ngModel)]="startTimeString" name="startTime" required />
+        <label for="startTime">Auction Start Time *</label>
+        <input type="datetime-local" id="startTime" [(ngModel)]="startTimeString" name="startTime" required #startTimeInput="ngModel" />
+        <div *ngIf="startTimeInput.invalid && startTimeInput.touched" class="error-message">
+          <span *ngIf="startTimeInput.errors?.['required']">Start time is required</span>
+        </div>
       </div>
       <div class="form-group">
-        <label for="duration">Auction Duration (hours)</label>
-        <select id="duration" [(ngModel)]="newAuction.duration" name="duration" required>
+        <label for="duration">Auction Duration (hours) *</label>
+        <select id="duration" [(ngModel)]="newAuction.duration" name="duration" required #durationInput="ngModel">
+          <option value="">Select duration</option>
           <option value="1">1 hour</option>
           <option value="6">6 hours</option>
           <option value="12">12 hours</option>
-          <option value="24" selected>24 hours</option>
+          <option value="24">24 hours</option>
           <option value="48">48 hours</option>
           <option value="72">72 hours (3 days)</option>
           <option value="168">168 hours (1 week)</option>
         </select>
+        <div *ngIf="durationInput.invalid && durationInput.touched" class="error-message">
+          <span *ngIf="durationInput.errors?.['required']">Duration is required</span>
+        </div>
       </div>
       <div class="form-group">
-        <label for="imageUpload">Upload Image</label>
+        <label for="imageUpload">Upload Image (Optional)</label>
         <input type="file" id="imageUpload" (change)="onImageUpload($event)" accept="image/*" />
         <img *ngIf="newAuction.imageUrl" [src]="newAuction.imageUrl" class="preview-image" />
       </div>
       <div class="form-actions">
-        <button type="submit" class="submit-btn">Add Auction</button>
+        <button type="submit" class="submit-btn" [disabled]="auctionForm.invalid">Add Auction</button>
         <button type="button" class="cancel-btn" (click)="toggleAddAuctionForm()">Cancel</button>
       </div>
     </form>

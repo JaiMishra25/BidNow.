@@ -12,7 +12,7 @@ const auctionSchema = new mongoose.Schema({
   },
   imageUrl: {
     type: String,
-    required: true
+    required: false
   },
   startingBid: {
     type: Number,

@@ -108,6 +108,51 @@
     text-align: center;
     margin-bottom: 30px;
   }
+
+  .connection-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    margin: 10px 0;
+    transition: all 0.3s ease;
+  }
+
+  .connection-status.connected {
+    background: rgba(46, 204, 113, 0.1);
+    color: #27ae60;
+    border: 1px solid rgba(46, 204, 113, 0.3);
+  }
+
+  .connection-status.disconnected {
+    background: rgba(231, 76, 60, 0.1);
+    color: #e74c3c;
+    border: 1px solid rgba(231, 76, 60, 0.3);
+  }
+
+  .status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+  }
+
+  .connection-status.connected .status-dot {
+    background: #27ae60;
+  }
+
+  .connection-status.disconnected .status-dot {
+    background: #e74c3c;
+  }
+
+  @keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.5; }
+    100% { opacity: 1; }
+  }
   
   .auction-header h1 {
     color: #2c3e50;

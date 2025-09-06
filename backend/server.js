@@ -20,7 +20,7 @@ const app = express();
 const server = http.createServer(app);
 const io = socketIo(server, {
   cors: {
-    origin: "http://localhost:4200", // Your Angular frontend URL
+    origin: ["http://localhost:4200", "http://localhost:4201", "https://bidnow-frontend.vercel.app"], // Your Angular frontend URLs
     methods: ["GET", "POST"]
   }
 });
@@ -29,7 +29,10 @@ const io = socketIo(server, {
 setSocketIO(io);
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: ["http://localhost:4200", "http://localhost:4201", "https://bidnow-frontend.vercel.app"],
+  credentials: true
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -46,7 +49,8 @@ app.get('/api/health', (req, res) => {
 });
 
 // Database connection
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/bidnow', {
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb+srv://bidnow:bidnow123@cluster0.8qjqj.mongodb.net/bidnow?retryWrites=true&w=majority';
+mongoose.connect(MONGODB_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 })

@@ -73,7 +73,8 @@ router.post('/', auth, requireRole(['buyer']), async (req, res) => {
         auctionId: auctionId,
         currentBid: amount,
         bidder: req.user.name,
-        timestamp: new Date()
+        timestamp: new Date(),
+        bidId: bid._id
       });
     }
 

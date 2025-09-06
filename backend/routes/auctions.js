@@ -105,7 +105,7 @@ router.post('/', auth, requireRole(['seller']), upload.single('image'), async (r
     const auction = new Auction({
       title,
       description,
-      imageUrl: req.file ? `/uploads/${req.file.filename}` : '',
+      imageUrl: req.file ? `/uploads/${req.file.filename}` : undefined,
       startingBid,
       minimumBid,
       seller: req.user._id,

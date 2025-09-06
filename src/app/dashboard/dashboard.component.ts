@@ -5,6 +5,8 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { BackendAuctionService, BackendAuction, CreateAuctionData } from '../services/backend-auction.service';
 import { AuthService } from '../services/auth.service';
+import { SocketService, BidUpdate, AuctionUpdate } from '../services/socket.service';
+import { Subscription } from 'rxjs';
 
 interface Auction {
   id: string;
@@ -55,12 +57,18 @@ export class DashboardComponent implements OnInit, OnDestroy {
   selectedImage: File | null = null;
   startTimeString: string = '';
   currentUser: any = null;
+  public isConnected = false;
+
+  private bidUpdateSubscription?: Subscription;
+  private auctionUpdateSubscription?: Subscription;
+  private connectionStatusSubscription?: Subscription;
 
   constructor(
     public router: Router,
     private snackBar: MatSnackBar,
     private auctionService: BackendAuctionService,
-    private authService: AuthService
+    private authService: AuthService,
+    private socketService: SocketService
   ) {}
 
   ngOnInit(): void {
@@ -80,6 +88,9 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.initializeStartTime();
 
     this.timerInterval = setInterval(() => this.updateTimers(), 1000);
+
+    // Initialize Socket.IO subscriptions
+    this.initializeSocketSubscriptions();
   }
 
   loadBackendAuctions(): void {
@@ -146,8 +157,29 @@ export class DashboardComponent implements OnInit, OnDestroy {
   }
 
   addAuction(): void {
-    if (!this.newAuction.title || !this.newAuction.info || !this.newAuction.minimumBid || !this.startTimeString || !this.newAuction.duration) {
-      this.snackBar.open('Please fill in all required fields.', 'Close', { duration: 3000 });
+    // Enhanced validation
+    if (!this.newAuction.title?.trim()) {
+      this.snackBar.open('Please enter an auction title.', 'Close', { duration: 3000 });
+      return;
+    }
+
+    if (!this.newAuction.info?.trim()) {
+      this.snackBar.open('Please enter an auction description.', 'Close', { duration: 3000 });
+      return;
+    }
+
+    if (!this.newAuction.minimumBid || this.newAuction.minimumBid <= 0) {
+      this.snackBar.open('Please enter a valid starting bid amount.', 'Close', { duration: 3000 });
+      return;
+    }
+
+    if (!this.startTimeString) {
+      this.snackBar.open('Please select a start time.', 'Close', { duration: 3000 });
+      return;
+    }
+
+    if (!this.newAuction.duration || this.newAuction.duration <= 0) {
+      this.snackBar.open('Please select a valid auction duration.', 'Close', { duration: 3000 });
       return;
     }
 
@@ -161,10 +193,16 @@ export class DashboardComponent implements OnInit, OnDestroy {
       return;
     }
 
+    // Validate end time is after start time
+    if (endTime <= startTime) {
+      this.snackBar.open('End time must be after start time.', 'Close', { duration: 3000 });
+      return;
+    }
+
     // Create auction data for backend
     const auctionData: CreateAuctionData = {
-      title: this.newAuction.title,
-      description: this.newAuction.info,
+      title: this.newAuction.title.trim(),
+      description: this.newAuction.info.trim(),
       startingBid: this.newAuction.minimumBid,
       minimumBid: this.newAuction.minimumBid, // Same as startingBid for now
       category: 'general', // Default category
@@ -172,17 +210,26 @@ export class DashboardComponent implements OnInit, OnDestroy {
       endTime: endTime
     };
 
+    console.log('Creating auction with data:', auctionData);
+    console.log('Selected image:', this.selectedImage);
+
     // Create auction using backend service
     this.auctionService.createAuction(auctionData, this.selectedImage || undefined).subscribe({
       next: (response) => {
-        this.snackBar.open('Auction created successfully!', 'Close', { duration: 3000 });
-        this.loadBackendAuctions(); // Reload auctions to update the list
-        this.toggleAddAuctionForm();
+        console.log('Auction created successfully:', response);
+        this.snackBar.open('Auction created successfully! It will be reviewed by admin before going live.', 'Close', { duration: 5000 });
+        
+        // Reset form and close modal
         this.resetNewAuctionForm();
+        this.toggleAddAuctionForm();
+        
+        // Reload auctions to update the list
+        this.loadBackendAuctions();
       },
       error: (error: any) => {
         console.error('Error creating auction:', error);
-        this.snackBar.open('Failed to create auction', 'Close', { duration: 3000 });
+        const errorMessage = error.error?.message || error.message || 'Failed to create auction. Please try again.';
+        this.snackBar.open(errorMessage, 'Close', { duration: 5000 });
       }
     });
   }
@@ -322,9 +369,143 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.router.navigate(['/']);
   }
 
+  initializeSocketSubscriptions(): void {
+    // Subscribe to connection status
+    this.connectionStatusSubscription = this.socketService.connectionStatus$.subscribe(
+      (connected) => {
+        this.isConnected = connected;
+      }
+    );
+
+    // Subscribe to bid updates
+    this.bidUpdateSubscription = this.socketService.bidUpdates$.subscribe(
+      (bidUpdate) => {
+        if (bidUpdate) {
+          this.handleBidUpdate(bidUpdate);
+        }
+      }
+    );
+
+    // Subscribe to auction updates
+    this.auctionUpdateSubscription = this.socketService.auctionUpdates$.subscribe(
+      (auctionUpdate) => {
+        if (auctionUpdate) {
+          this.handleAuctionUpdate(auctionUpdate);
+        }
+      }
+    );
+  }
+
+  handleBidUpdate(bidUpdate: BidUpdate): void {
+    console.log('🔄 Dashboard received bid update:', bidUpdate);
+    
+    // Update current bid in all auction lists
+    this.updateAuctionBid(bidUpdate.auctionId, bidUpdate.currentBid);
+    
+    // Show notification
+    this.snackBar.open(
+      `New bid: $${bidUpdate.currentBid} on auction`, 
+      'Close', 
+      { duration: 3000 }
+    );
+  }
+
+  handleAuctionUpdate(auctionUpdate: AuctionUpdate): void {
+    console.log('🔄 Dashboard received auction update:', auctionUpdate);
+    
+    // Update auction status
+    this.updateAuctionStatus(auctionUpdate.auctionId, auctionUpdate.status, auctionUpdate.currentBid);
+    
+    // Show notification
+    this.snackBar.open(
+      `Auction status updated: ${auctionUpdate.status}`, 
+      'Close', 
+      { duration: 3000 }
+    );
+  }
+
+  updateAuctionBid(auctionId: string, newBid: number): void {
+    // Update in upcoming auctions
+    this.upcomingAuctions.forEach(auction => {
+      if (auction.id === auctionId) {
+        auction.currentBid = newBid;
+      }
+    });
+    this.filteredUpcomingAuctions.forEach(auction => {
+      if (auction.id === auctionId) {
+        auction.currentBid = newBid;
+      }
+    });
+
+    // Update in current auctions
+    this.currentAuctions.forEach(auction => {
+      if (auction.id === auctionId) {
+        auction.currentBid = newBid;
+      }
+    });
+    this.filteredCurrentAuctions.forEach(auction => {
+      if (auction.id === auctionId) {
+        auction.currentBid = newBid;
+      }
+    });
+
+    // Update in finished auctions
+    this.finishedAuctions.forEach(auction => {
+      if (auction.id === auctionId) {
+        auction.currentBid = newBid;
+      }
+    });
+    this.filteredFinishedAuctions.forEach(auction => {
+      if (auction.id === auctionId) {
+        auction.currentBid = newBid;
+      }
+    });
+  }
+
+  updateAuctionStatus(auctionId: string, newStatus: string, newBid?: number): void {
+    // Find auction in all lists and update status
+    const updateAuctionInList = (list: Auction[]) => {
+      list.forEach(auction => {
+        if (auction.id === auctionId) {
+          auction.status = newStatus as any;
+          if (newBid !== undefined) {
+            auction.currentBid = newBid;
+          }
+        }
+      });
+    };
+
+    updateAuctionInList(this.upcomingAuctions);
+    updateAuctionInList(this.currentAuctions);
+    updateAuctionInList(this.finishedAuctions);
+    updateAuctionInList(this.filteredUpcomingAuctions);
+    updateAuctionInList(this.filteredCurrentAuctions);
+    updateAuctionInList(this.filteredFinishedAuctions);
+
+    // Re-categorize auctions based on new status
+    this.categorizeAuctions();
+  }
+
+  categorizeAuctions(): void {
+    // This method should be implemented to re-categorize auctions based on status
+    // For now, we'll just reload the auctions
+    this.loadBackendAuctions();
+  }
+
   ngOnDestroy(): void {
     if (this.timerInterval) {
       clearInterval(this.timerInterval);
+    }
+
+    // Clean up Socket.IO subscriptions
+    if (this.bidUpdateSubscription) {
+      this.bidUpdateSubscription.unsubscribe();
+    }
+    if (this.auctionUpdateSubscription) {
+      this.auctionUpdateSubscription.unsubscribe();
+    }
+    if (this.connectionStatusSubscription) {
+      this.connectionStatusSubscription.unsubscribe();
     }
   }
 }

@@ -5,6 +5,8 @@ import { FormsModule } from '@angular/forms';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { BackendAuctionService } from '../services/backend-auction.service';
 import { AuthService } from '../services/auth.service';
+import { SocketService, BidUpdate, AuctionUpdate } from '../services/socket.service';
+import { Subscription } from 'rxjs';
 
 interface Bid {
   _id: string;
@@ -31,13 +33,20 @@ export class AuctionDetailComponent implements OnInit, OnDestroy {
   public timer: string = '';
   public isLoading = false;
   public currentUser: any = null;
+  public isConnected = false;
+  public auctionId: string = '';
+
+  private bidUpdateSubscription?: Subscription;
+  private auctionUpdateSubscription?: Subscription;
+  private connectionStatusSubscription?: Subscription;
 
   constructor(
     public router: Router,
     private route: ActivatedRoute,
     private snackBar: MatSnackBar,
     private auctionService: BackendAuctionService,
-    private authService: AuthService
+    private authService: AuthService,
+    private socketService: SocketService
   ) {
     this.currentUser = this.authService.getCurrentUser();
   }
@@ -46,20 +55,41 @@ export class AuctionDetailComponent implements OnInit, OnDestroy {
     // Get auction ID from route parameters
     const auctionId = this.route.snapshot.paramMap.get('id');
     if (auctionId) {
+      this.auctionId = auctionId;
       this.loadAuctionDetails(auctionId);
     } else {
       // Fallback to router state if no route param
       const state = history.state || {};
       this.auction = state['auction'] || {};
       this.allAuctions = state['auctions'] || [];
+      this.auctionId = this.auction._id || this.auction.id;
       this.currentBidAmount = this.auction.currentBid || this.auction.startingBid || 0;
       this.startTimer();
       this.loadBidHistory();
     }
+
+    // Initialize Socket.IO subscriptions
+    this.initializeSocketSubscriptions();
   }
 
   ngOnDestroy(): void {
     clearInterval(this.timerInterval);
+    
+    // Clean up Socket.IO subscriptions
+    if (this.bidUpdateSubscription) {
+      this.bidUpdateSubscription.unsubscribe();
+    }
+    if (this.auctionUpdateSubscription) {
+      this.auctionUpdateSubscription.unsubscribe();
+    }
+    if (this.connectionStatusSubscription) {
+      this.connectionStatusSubscription.unsubscribe();
+    }
+
+    // Leave auction room
+    if (this.auctionId) {
+      this.socketService.leaveAuction(this.auctionId);
+    }
   }
 
   loadAuctionDetails(auctionId: string): void {
@@ -69,6 +99,9 @@ export class AuctionDetailComponent implements OnInit, OnDestroy {
         this.currentBidAmount = auction.currentBid || auction.startingBid || 0;
         this.startTimer();
         this.loadBidHistory();
+        
+        // Join auction room for real-time updates
+        this.socketService.joinAuction(auctionId);
       },
       error: (error) => {
         console.error('Error loading auction details:', error);
@@ -76,6 +109,88 @@ export class AuctionDetailComponent implements OnInit, OnDestroy {
         this.router.navigate(['/dashboard']);
       }
     });
+  }
+
+  initializeSocketSubscriptions(): void {
+    // Subscribe to connection status
+    this.connectionStatusSubscription = this.socketService.connectionStatus$.subscribe(
+      (connected) => {
+        this.isConnected = connected;
+        if (connected && this.auctionId) {
+          this.socketService.joinAuction(this.auctionId);
+        }
+      }
+    );
+
+    // Subscribe to bid updates
+    this.bidUpdateSubscription = this.socketService.bidUpdates$.subscribe(
+      (bidUpdate) => {
+        if (bidUpdate && bidUpdate.auctionId === this.auctionId) {
+          this.handleBidUpdate(bidUpdate);
+        }
+      }
+    );
+
+    // Subscribe to auction updates
+    this.auctionUpdateSubscription = this.socketService.auctionUpdates$.subscribe(
+      (auctionUpdate) => {
+        if (auctionUpdate && auctionUpdate.auctionId === this.auctionId) {
+          this.handleAuctionUpdate(auctionUpdate);
+        }
+      }
+    );
+  }
+
+  handleBidUpdate(bidUpdate: BidUpdate): void {
+    console.log('🔄 Handling bid update:', bidUpdate);
+    
+    // Update current bid amount
+    this.currentBidAmount = bidUpdate.currentBid;
+    
+    // Check if this bid already exists to prevent duplicates
+    const bidExists = this.bidHistory.some(bid => bid._id === bidUpdate.bidId);
+    
+    if (!bidExists) {
+      // Add new bid to history
+      const newBid: Bid = {
+        _id: bidUpdate.bidId,
+        amount: bidUpdate.currentBid,
+        bidder: bidUpdate.bidder,
+        timestamp: bidUpdate.timestamp,
+        auctionId: bidUpdate.auctionId
+      };
+      
+      // Add to beginning of bid history
+      this.bidHistory.unshift(newBid);
+    }
+    
+    // Show notification (only if it's not from current user)
+    if (bidUpdate.bidder !== this.currentUser?.name) {
+      this.snackBar.open(
+        `New bid: $${bidUpdate.currentBid} by ${bidUpdate.bidder}`, 
+        'Close', 
+        { duration: 3000 }
+      );
+    }
+  }
+
+  handleAuctionUpdate(auctionUpdate: AuctionUpdate): void {
+    console.log('🔄 Handling auction update:', auctionUpdate);
+    
+    // Update auction status and current bid
+    this.auction.status = auctionUpdate.status;
+    this.currentBidAmount = auctionUpdate.currentBid;
+    
+    if (auctionUpdate.winner) {
+      this.auction.winner = auctionUpdate.winner;
+    }
+    
+    // Show notification
+    this.snackBar.open(
+      `Auction status updated: ${auctionUpdate.status}`, 
+      'Close', 
+      { duration: 3000 }
+    );
   }
 
   startTimer(): void {
@@ -133,18 +248,9 @@ export class AuctionDetailComponent implements OnInit, OnDestroy {
         this.currentBidAmount = this.userBidAmount!;
         this.userBidAmount = null;
         
-        // Add new bid to history
-        this.bidHistory.unshift({
-          _id: response.bid._id || 'temp-id',
-          amount: response.bid.amount,
-          bidder: this.currentUser.name,
-          timestamp: new Date(),
-          auctionId: auctionId
-        });
-        
         this.snackBar.open(`Bid of $${response.bid.amount} placed successfully!`, 'Close', { duration: 3000 });
         
-        // Reload bid history to get updated data
+        // Reload bid history to get updated data from server
         this.loadBidHistory();
       },
       error: (error) => {
